@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HobbyRoom — 취미를 함께 기록하는 공간</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F7F2;
+      --surface: #FFFFFF;
+      --text: #1C1C1A;
+      --muted: #8A8A7E;
+      --accent: #2D5016;
+      --accent-soft: #EEF3E8;
+      --border: #E5E3DA;
+      --danger: #C0392B;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+    }
+
+    /* ─── Layout ─── */
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    /* ─── Header ─── */
+    header {
+      padding: 28px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .logo span { color: var(--accent); }
+
+    .header-link {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .header-link:hover { color: var(--text); }
+
+    /* ─── Hero ─── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 60px;
+    }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+
+    h1 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      max-width: 640px;
+      margin-bottom: 20px;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 420px;
+      line-height: 1.7;
+      margin-bottom: 56px;
+    }
+
+    /* ─── Cards ─── */
+    .cards {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      max-width: 520px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 28px 24px;
+      flex: 1;
+      min-width: 220px;
+      text-align: left;
+      cursor: pointer;
+      transition: box-shadow 0.18s, transform 0.18s, border-color 0.18s;
+    }
+    .card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.07);
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .card-icon {
+      font-size: 1.6rem;
+      margin-bottom: 14px;
+    }
+    .card h3 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .card p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ─── Modal ─── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(28,28,26,0.45);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 36px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.12);
+      animation: slideUp 0.22s ease;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal h2 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.35rem;
+      margin-bottom: 6px;
+    }
+    .modal .modal-sub {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.15s;
+      margin-bottom: 20px;
+    }
+    input[type="text"]:focus { border-color: var(--accent); }
+    input[type="text"]::placeholder { color: var(--muted); }
+
+    .days-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .day-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+    .day-btn.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+    }
+    .btn {
+      flex: 1;
+      padding: 13px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .btn-ghost:hover { border-color: var(--text); color: var(--text); }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .error-msg {
+      font-size: 0.8rem;
+      color: var(--danger);
+      margin-top: -14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    /* ─── Footer ─── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── Decoration ─── */
+    .deco {
+      position: fixed;
+      pointer-events: none;
+      opacity: 0.04;
+      font-family: 'Libre Baskerville', serif;
+      font-size: 18vw;
+      font-style: italic;
+      color: var(--accent);
+      bottom: -40px;
+      right: -20px;
+      line-height: 1;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <a class="logo" href="index.html">Hobby<span>Room</span></a>
+    <a class="header-link" href="https://github.com" target="_blank">GitHub</a>
+  </header>
+
+  <main class="hero">
+    <p class="eyebrow">취미를 함께 기록하는 공간</p>
+    <h1>같은 관심사,<br>함께 쓰는 노트</h1>
+    <p class="subtitle">링크, 사진, 글을 자유롭게 편집하세요.<br>방을 만들고 코드를 공유하면 끝 — 1~3일 후 자동으로 사라져요.</p>
+
+    <div class="cards">
+      <div class="card" onclick="openCreate()">
+        <div class="card-icon">✦</div>
+        <h3>방 만들기</h3>
+        <p>새로운 공간을 만들고 친구에게 코드를 공유하세요</p>
+      </div>
+      <div class="card" onclick="openJoin()">
+        <div class="card-icon">→</div>
+        <h3>방 참가하기</h3>
+        <p>초대 코드를 입력해서 기존 공간에 참가하세요</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>HobbyRoom · 임시 협업 공간 · 데이터는 만료 후 삭제됩니다</footer>
+</div>
+
+<div class="deco">h</div>
+
+<!-- Create Modal -->
+<div class="overlay" id="createOverlay" onclick="closeAll(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2>새 방 만들기</h2>
+    <p class="modal-sub">코드를 공유해 친구들을 초대하세요</p>
+
+    <label for="roomName">방 이름 (취미/주제)</label>
+    <input type="text" id="roomName" placeholder="예: 독서모임, 사진 일기, 여행 계획" maxlength="40">
+
+    <label>유지 기간</label>
+    <div class="days-row">
+      <button class="day-btn active" onclick="selectDay(1,this)">1일</button>
+      <button class="day-btn" onclick="selectDay(2,this)">2일</button>
+      <button class="day-btn" onclick="selectDay(3,this)">3일</button>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeAll()">취소</button>
+      <button class="btn btn-primary" id="createBtn" onclick="createRoom()">만들기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Join Modal -->
+<div class="overlay" id="joinOverlay" onclick="closeAll(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2>방 참가하기</h2>
+    <p class="modal-sub">초대받은 6자리 코드를 입력하세요</p>
+
+    <label for="roomCode">방 코드</label>
+    <input type="text" id="roomCode" placeholder="ABC123" maxlength="6" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+    <p class="error-msg" id="joinError">존재하지 않거나 만료된 방이에요.</p>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeAll()">취소</button>
+      <button class="btn btn-primary" id="joinBtn" onclick="joinRoom()">참가하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyBq44u5CUVbUiCb04YuW_FKTkUWwHdEK8k",   // ← 실제 값으로
+  authDomain:        "goyu-webonly-aa1cc.firebaseapp.com",
+  databaseURL:       "https://goyu-webonly-aa1cc-default-rtdb.firebaseio.com",
+  projectId:         "goyu-webonly-aa1cc",
+  storageBucket:     "goyu-webonly-aa1cc.firebasestorage.app",
+  messagingSenderId: "684157983877",
+  appId:             "1:684157983877:web:5722454ba4bc7fd51dddec"
+};
+
+  const app = initializeApp(FIREBASE_CONFIG);
+  const db = getDatabase(app);
+
+  let selectedDays = 1;
+
+  window.selectDay = (d, el) => {
+    selectedDays = d;
+    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  };
+
+  window.openCreate = () => {
+    document.getElementById('createOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('roomName').focus(), 100);
+  };
+  window.openJoin = () => {
+    document.getElementById('joinOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('roomCode').focus(), 100);
+  };
+  window.closeAll = (e) => {
+    if (e && e.target !== e.currentTarget) return;
+    document.querySelectorAll('.overlay').forEach(o => o.classList.remove('open'));
+    document.getElementById('joinError').style.display = 'none';
+  };
+
+  function generateCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    return code;
+  }
+
+  window.createRoom = async () => {
+    const name = document.getElementById('roomName').value.trim();
+    if (!name) { document.getElementById('roomName').focus(); return; }
+
+    const btn = document.getElementById('createBtn');
+    btn.disabled = true; btn.textContent = '생성 중...';
+
+    const code = generateCode();
+    const expires = Date.now() + selectedDays * 24 * 60 * 60 * 1000;
+
+    await set(ref(db, `rooms/${code}`), {
+      name,
+      expires,
+      days: selectedDays,
+      content: '',
+      createdAt: Date.now()
+    });
+
+    sessionStorage.setItem('hr_name', name);
+    window.location.href = `editor.html?room=${code}`;
+  };
+
+  window.joinRoom = async () => {
+    const code = document.getElementById('roomCode').value.trim().toUpperCase();
+    if (code.length !== 6) return;
+
+    const btn = document.getElementById('joinBtn');
+    btn.disabled = true; btn.textContent = '확인 중...';
+
+    const snap = await get(child(ref(db), `rooms/${code}`));
+    if (!snap.exists() || snap.val().expires < Date.now()) {
+      document.getElementById('joinError').style.display = 'block';
+      btn.disabled = false; btn.textContent = '참가하기';
+      return;
+    }
+
+    window.location.href = `editor.html?room=${code}`;
+  };
+
+  // Enter key support
+  document.getElementById('roomName').addEventListener('keydown', e => { if(e.key==='Enter') window.createRoom(); });
+  document.getElementById('roomCode').addEventListener('keydown', e => { if(e.key==='Enter') window.joinRoom(); });
+</script>
+</body>
+</html>

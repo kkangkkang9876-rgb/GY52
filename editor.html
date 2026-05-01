@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HobbyRoom 편집기</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <!-- Quill Rich Text Editor -->
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F7F2;
+      --surface: #FFFFFF;
+      --text: #1C1C1A;
+      --muted: #8A8A7E;
+      --accent: #2D5016;
+      --accent-soft: #EEF3E8;
+      --border: #E5E3DA;
+      --online: #4CAF50;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .page {
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      overflow: hidden;
+    }
+
+    /* ─── Top Bar ─── */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s;
+    }
+    .back-btn:hover { color: var(--text); }
+
+    .room-title {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.05rem;
+      flex: 1;
+    }
+
+    .room-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .expire-badge {
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+    }
+    .expire-badge.soon { color: #C0392B; border-color: #f5c6c2; background: #fdf3f2; }
+
+    .share-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 8px;
+      padding: 7px 14px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .share-btn:hover { background: var(--accent); color: white; }
+    .share-btn .code { font-weight: 700; letter-spacing: 0.08em; }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--online);
+    }
+
+    /* ─── Toolbar (Quill customization) ─── */
+    #toolbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border) !important;
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+      padding: 8px 20px !important;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Quill overrides */
+    .ql-toolbar.ql-snow {
+      border: none !important;
+      border-bottom: 1px solid var(--border) !important;
+      background: var(--surface);
+      padding: 8px 24px;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .ql-container.ql-snow {
+      border: none !important;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+    }
+    .ql-editor {
+      padding: 40px 48px !important;
+      max-width: 780px;
+      margin: 0 auto;
+      min-height: calc(100vh - 200px);
+      line-height: 1.75;
+      color: var(--text);
+    }
+    .ql-editor h1 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .ql-editor h2 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-top: 24px;
+      margin-bottom: 4px;
+    }
+    .ql-editor p { margin-bottom: 4px; }
+    .ql-editor a { color: var(--accent); text-decoration: underline; }
+    .ql-editor img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 12px 0;
+    }
+    .ql-editor blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 16px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .ql-snow .ql-stroke { stroke: var(--muted) !important; }
+    .ql-snow .ql-fill { fill: var(--muted) !important; }
+    .ql-snow .ql-picker-label { color: var(--muted) !important; }
+    .ql-snow .ql-active .ql-stroke { stroke: var(--accent) !important; }
+    .ql-snow .ql-active .ql-fill { fill: var(--accent) !important; }
+    .ql-snow button:hover .ql-stroke { stroke: var(--accent) !important; }
+    .ql-snow button:hover .ql-fill { fill: var(--accent) !important; }
+
+    /* ─── Editor wrapper ─── */
+    .editor-wrap {
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    .editor-surface {
+      background: var(--surface);
+      max-width: 780px;
+      margin: 32px auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+
+    /* ─── Save indicator ─── */
+    .save-indicator {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.3s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .save-indicator.saving .dot { background: #F39C12; }
+    .save-indicator.saved .dot { background: var(--online); }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.2s;
+    }
+
+    /* ─── Share copied toast ─── */
+    .toast {
+      position: fixed;
+      top: 72px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      background: var(--text);
+      color: white;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ─── Expired overlay ─── */
+    .expired-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      gap: 12px;
+    }
+    .expired-screen.show { display: flex; }
+    .expired-screen h2 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.6rem;
+    }
+    .expired-screen p { color: var(--muted); font-size: 0.9rem; }
+    .expired-screen a {
+      margin-top: 8px;
+      color: var(--accent);
+      font-size: 0.88rem;
+    }
+
+    /* ─── Image upload button ─── */
+    #image-upload { display: none; }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 600px) {
+      .ql-editor { padding: 24px 20px !important; }
+      .editor-surface { margin: 16px; border-radius: 10px; }
+      .room-meta .expire-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar">
+    <a href="index.html" class="back-btn">← 홈</a>
+    <div class="room-title" id="roomTitleEl">로딩 중...</div>
+    <div class="room-meta">
+      <div class="status-dot"></div>
+      <span class="expire-badge" id="expireBadge">—</span>
+      <button class="share-btn" id="shareBtn" onclick="copyCode()">
+        🔗 코드 <span class="code" id="codeDisplay">—</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="quill-toolbar">
+    <select class="ql-header">
+      <option selected></option>
+      <option value="1">제목 1</option>
+      <option value="2">제목 2</option>
+    </select>
+    <button class="ql-bold"></button>
+    <button class="ql-italic"></button>
+    <button class="ql-underline"></button>
+    <button class="ql-blockquote"></button>
+    <button class="ql-list" value="bullet"></button>
+    <button class="ql-list" value="ordered"></button>
+    <button class="ql-link"></button>
+    <button onclick="triggerImageUpload()">🖼</button>
+    <button class="ql-clean"></button>
+  </div>
+
+  <div class="editor-wrap">
+    <div class="editor-surface">
+      <div id="editor"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Save indicator -->
+<div class="save-indicator" id="saveIndicator">
+  <div class="dot"></div>
+  <span id="saveText">저장됨</span>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">코드를 클립보드에 복사했어요!</div>
+
+<!-- Expired -->
+<div class="expired-screen" id="expiredScreen">
+  <div style="font-size:2.5rem">📭</div>
+  <h2>이 방은 만료됐어요</h2>
+  <p>설정한 기간이 지나 자동으로 삭제됐습니다.</p>
+  <a href="index.html">새 방 만들기 →</a>
+</div>
+
+<!-- Hidden image input -->
+<input type="file" id="image-upload" accept="image/*">
+
+<!-- Quill -->
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getStorage, ref as sref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+  const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyBq44u5CUVbUiCb04YuW_FKTkUWwHdEK8k",   // ← 실제 값으로
+  authDomain:        "goyu-webonly-aa1cc.firebaseapp.com",
+  databaseURL:       "https://goyu-webonly-aa1cc-default-rtdb.firebaseio.com",
+  projectId:         "goyu-webonly-aa1cc",
+  storageBucket:     "goyu-webonly-aa1cc.firebasestorage.app",
+  messagingSenderId: "684157983877",
+  appId:             "1:684157983877:web:5722454ba4bc7fd51dddec"
+};
+
+  const app     = initializeApp(FIREBASE_CONFIG);
+  const db      = getDatabase(app);
+  const storage = getStorage(app);
+
+  // ── Get room code from URL ──
+  const params = new URLSearchParams(location.search);
+  const roomCode = params.get('room')?.toUpperCase();
+  if (!roomCode) { location.href = 'index.html'; }
+
+  const roomRef = ref(db, `rooms/${roomCode}`);
+
+  // ── Init Quill ──
+  const quill = new Quill('#editor', {
+    theme: 'snow',
+    modules: { toolbar: '#quill-toolbar' },
+    placeholder: '자유롭게 기록하세요... 글, 사진, 링크 모두 환영해요 ✦',
+  });
+
+  // ── Load room ──
+  const snap = await get(roomRef);
+  if (!snap.exists()) { location.href = 'index.html'; }
+
+  const room = snap.val();
+  if (room.expires < Date.now()) {
+    document.getElementById('expiredScreen').classList.add('show');
+  } else {
+    document.getElementById('roomTitleEl').textContent = room.name;
+    document.getElementById('codeDisplay').textContent = roomCode;
+    document.title = `${room.name} — HobbyRoom`;
+
+    // Expiry badge
+    updateExpiry(room.expires);
+    setInterval(() => updateExpiry(room.expires), 60000);
+
+    // Load content
+    if (room.content) {
+      try { quill.setContents(JSON.parse(room.content)); } catch(e) {}
+    }
+  }
+
+  // ── Real-time sync ──
+  let isSaving = false;
+  let lastRemoteChange = 0;
+
+  onValue(ref(db, `rooms/${roomCode}/content`), (snap) => {
+    if (isSaving) return;
+    if (Date.now() - lastLocalEdit < 1500) return;
+    const remote = snap.val();
+    if (!remote) return;
+    try {
+      const delta = JSON.parse(remote);
+      const curDelta = quill.getContents();
+      if (JSON.stringify(delta) !== JSON.stringify(curDelta)) {
+        const sel = quill.getSelection();
+        quill.setContents(delta, 'silent');
+        if (sel) quill.setSelection(sel.index, sel.length, 'silent');
+      }
+    } catch(e) {}
+  });
+
+  // ── Save on change ──
+  let saveTimer = null;
+  let lastLocalEdit = 0;
+
+  quill.on('text-change', (delta, old, source) => {
+    if (source !== 'user') return;
+    lastLocalEdit = Date.now();
+    setSaving(true);
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveContent, 800);
+  });
+
+  async function saveContent() {
+    isSaving = true;
+    try {
+      await update(roomRef, { content: JSON.stringify(quill.getContents()) });
+      setSaving(false, true);
+    } catch(e) {
+      setSaving(false, false);
+    }
+    setTimeout(() => { isSaving = false; }, 300);
+  }
+
+  function setSaving(saving, success) {
+    const ind = document.getElementById('saveIndicator');
+    const txt = document.getElementById('saveText');
+    const dot = ind.querySelector('.dot');
+    if (saving) {
+      ind.className = 'save-indicator saving';
+      txt.textContent = '저장 중...';
+    } else if (success === true) {
+      ind.className = 'save-indicator saved';
+      txt.textContent = '저장됨';
+    } else {
+      ind.className = 'save-indicator';
+      txt.textContent = '저장 실패';
+    }
+  }
+
+  // ── Image upload (Firebase Storage + 자동 압축) ──
+  const imgInput = document.getElementById('image-upload');
+  window.triggerImageUpload = () => imgInput.click();
+
+  // Canvas로 압축 후 Blob 반환
+  function compressToBlob(file, maxWidth = 1600, quality = 0.85) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const scale  = Math.min(1, maxWidth / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.round(img.width  * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('압축 실패')), 'image/jpeg', quality);
+      };
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+
+  imgInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      alert('20MB 이하 이미지만 올릴 수 있어요.'); imgInput.value = ''; return;
+    }
+
+    setSaving(true);
+    document.getElementById('saveText').textContent = '압축 중...';
+
+    try {
+      const blob      = await compressToBlob(file);
+      const path      = `rooms/${roomCode}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      const storageRef = sref(storage, path);
+      const task      = uploadBytesResumable(storageRef, blob, { contentType: 'image/jpeg' });
+
+      task.on('state_changed',
+        (snap) => {
+          const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+          document.getElementById('saveText').textContent = `업로드 ${pct}%`;
+        },
+        (err) => { console.error(err); alert('업로드 실패. Firebase Storage 설정을 확인해주세요.'); setSaving(false, false); },
+        async () => {
+          const url   = await getDownloadURL(task.snapshot.ref);
+          const range = quill.getSelection(true);
+          quill.insertEmbed(range.index, 'image', url);
+          quill.setSelection(range.index + 1);
+          setSaving(false, true);
+        }
+      );
+    } catch(err) {
+      console.error(err);
+      alert('이미지 처리 중 오류가 발생했어요.');
+      setSaving(false, false);
+    }
+    imgInput.value = '';
+  });
+
+  // ── Copy code ──
+  window.copyCode = () => {
+    navigator.clipboard.writeText(roomCode).then(() => {
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    });
+  };
+
+  // ── Expiry display ──
+  function updateExpiry(expires) {
+    const remaining = expires - Date.now();
+    const badge = document.getElementById('expireBadge');
+    if (remaining <= 0) {
+      badge.textContent = '만료됨';
+      badge.classList.add('soon');
+      return;
+    }
+    const hours = Math.floor(remaining / 3600000);
+    const days  = Math.floor(hours / 24);
+    if (days > 0) {
+      badge.textContent = `${days}일 후 만료`;
+    } else if (hours > 0) {
+      badge.textContent = `${hours}시간 후 만료`;
+      if (hours < 6) badge.classList.add('soon');
+    } else {
+      badge.textContent = '곧 만료';
+      badge.classList.add('soon');
+    }
+  }
+</script>
+</body>
+</html>
