@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HobbyRoom 편집기</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <!-- ★ 무료 글씨체 14종 — index.html과 동일 -->
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=DM+Sans:wght@300;400;500&family=Gaegu&family=Gothic+A1:wght@300;400;700&family=Gugi&family=Jua&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;1,300&family=Nanum+Gothic&family=Nanum+Myeongjo&family=Noto+Serif+KR:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&family=Stylish&display=swap" rel="stylesheet">
   <!-- Quill Rich Text Editor -->
   <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+  <!-- marked.js — 마크다운 렌더링 -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -22,12 +25,7 @@
       --online: #4CAF50;
     }
 
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-    }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; }
 
     .page {
       height: 100vh;
@@ -46,78 +44,41 @@
       align-items: center;
       gap: 16px;
     }
-
     .back-btn {
-      text-decoration: none;
-      color: var(--muted);
-      font-size: 0.82rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: color 0.15s;
+      text-decoration: none; color: var(--muted); font-size: 0.82rem;
+      display: flex; align-items: center; gap: 6px;
+      transition: color 0.15s; white-space: nowrap;
     }
     .back-btn:hover { color: var(--text); }
 
     .room-title {
       font-family: 'Libre Baskerville', serif;
-      font-size: 1.05rem;
-      flex: 1;
+      font-size: 1.05rem; flex: 1;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-
-    .room-meta {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
+    .room-meta { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
 
     .expire-badge {
-      font-size: 0.75rem;
-      color: var(--muted);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 4px 12px;
+      font-size: 0.75rem; color: var(--muted);
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 12px; white-space: nowrap;
     }
     .expire-badge.soon { color: #C0392B; border-color: #f5c6c2; background: #fdf3f2; }
 
     .share-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--accent-soft);
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      border-radius: 8px;
-      padding: 7px 14px;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 500;
-      transition: all 0.15s;
+      display: flex; align-items: center; gap: 8px;
+      background: var(--accent-soft); border: 1px solid var(--accent);
+      color: var(--accent); border-radius: 8px; padding: 7px 14px;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; font-weight: 500;
+      transition: all 0.15s; white-space: nowrap;
     }
     .share-btn:hover { background: var(--accent); color: white; }
     .share-btn .code { font-weight: 700; letter-spacing: 0.08em; }
 
-    .status-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--online);
-    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--online); flex-shrink: 0; }
 
-    /* ─── Toolbar (Quill customization) ─── */
-    #toolbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border) !important;
-      border-top: none !important;
-      border-left: none !important;
-      border-right: none !important;
-      padding: 8px 20px !important;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* Quill overrides */
+    /* ─── Quill Toolbar ─── */
     .ql-toolbar.ql-snow {
       border: none !important;
       border-bottom: 1px solid var(--border) !important;
@@ -125,169 +86,217 @@
       padding: 8px 24px;
       font-family: 'DM Sans', sans-serif;
     }
-    .ql-container.ql-snow {
-      border: none !important;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1rem;
-    }
+    .ql-container.ql-snow { border: none !important; font-size: 1rem; }
+
     .ql-editor {
       padding: 40px 48px !important;
-      max-width: 780px;
-      margin: 0 auto;
-      min-height: calc(100vh - 200px);
-      line-height: 1.75;
-      color: var(--text);
+      max-width: 780px; margin: 0 auto;
+      min-height: calc(100vh - 220px);
+      line-height: 1.75; color: var(--text);
     }
-    .ql-editor h1 {
-      font-family: 'Libre Baskerville', serif;
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-    .ql-editor h2 {
-      font-family: 'Libre Baskerville', serif;
-      font-size: 1.35rem;
-      font-weight: 700;
-      margin-top: 24px;
-      margin-bottom: 4px;
-    }
-    .ql-editor p { margin-bottom: 4px; }
-    .ql-editor a { color: var(--accent); text-decoration: underline; }
-    .ql-editor img {
-      max-width: 100%;
-      border-radius: 10px;
-      margin: 12px 0;
-    }
-    .ql-editor blockquote {
-      border-left: 3px solid var(--accent);
-      padding-left: 16px;
-      color: var(--muted);
-      font-style: italic;
-    }
+    .ql-editor h1 { font-family: 'Libre Baskerville', serif; font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+    .ql-editor h2 { font-family: 'Libre Baskerville', serif; font-size: 1.35rem; font-weight: 700; margin-top: 24px; margin-bottom: 4px; }
+    .ql-editor p  { margin-bottom: 4px; }
+    .ql-editor a  { color: var(--accent); text-decoration: underline; }
+    .ql-editor img { max-width: 100%; border-radius: 10px; margin: 12px 0; }
+    .ql-editor blockquote { border-left: 3px solid var(--accent); padding-left: 16px; color: var(--muted); font-style: italic; }
 
-    .ql-snow .ql-stroke { stroke: var(--muted) !important; }
-    .ql-snow .ql-fill { fill: var(--muted) !important; }
-    .ql-snow .ql-picker-label { color: var(--muted) !important; }
+    /* Quill 아이콘 색상 */
+    .ql-snow .ql-stroke          { stroke: var(--muted) !important; }
+    .ql-snow .ql-fill            { fill: var(--muted) !important; }
+    .ql-snow .ql-picker-label    { color: var(--muted) !important; }
     .ql-snow .ql-active .ql-stroke { stroke: var(--accent) !important; }
-    .ql-snow .ql-active .ql-fill { fill: var(--accent) !important; }
+    .ql-snow .ql-active .ql-fill   { fill: var(--accent) !important; }
     .ql-snow button:hover .ql-stroke { stroke: var(--accent) !important; }
-    .ql-snow button:hover .ql-fill { fill: var(--accent) !important; }
+    .ql-snow button:hover .ql-fill   { fill: var(--accent) !important; }
+
+    /* ─── ★ 글씨체 Quill 포맷 CSS ─── */
+    /* 각 클래스가 있어야 Quill이 선택한 글씨체를 실제로 적용합니다 */
+    .ql-font-nanum-gothic      { font-family: 'Nanum Gothic', sans-serif !important; }
+    .ql-font-nanum-myeongjo    { font-family: 'Nanum Myeongjo', serif !important; }
+    .ql-font-gothic-a1         { font-family: 'Gothic A1', sans-serif !important; }
+    .ql-font-noto-serif-kr     { font-family: 'Noto Serif KR', serif !important; }
+    .ql-font-gaegu             { font-family: 'Gaegu', cursive !important; }
+    .ql-font-gugi              { font-family: 'Gugi', cursive !important; }
+    .ql-font-black-han-sans    { font-family: 'Black Han Sans', sans-serif !important; }
+    .ql-font-do-hyeon          { font-family: 'Do Hyeon', sans-serif !important; }
+    .ql-font-jua               { font-family: 'Jua', sans-serif !important; }
+    .ql-font-stylish           { font-family: 'Stylish', sans-serif !important; }
+    .ql-font-libre-baskerville { font-family: 'Libre Baskerville', serif !important; }
+    .ql-font-playfair-display  { font-family: 'Playfair Display', serif !important; }
+    .ql-font-merriweather      { font-family: 'Merriweather', serif !important; }
+    .ql-font-source-sans-3     { font-family: 'Source Sans 3', sans-serif !important; }
+
+    /* 드롭다운 너비 & 항목 레이블 (각 글씨체로 미리보기) */
+    .ql-snow .ql-picker.ql-font { width: 110px; }
+
+    .ql-snow .ql-picker.ql-font .ql-picker-label::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item::before { content: '기본체'; }
+
+    .ql-snow .ql-picker.ql-font [data-value="nanum-gothic"]::before
+      { content: '나눔고딕';   font-family: 'Nanum Gothic'; }
+    .ql-snow .ql-picker.ql-font [data-value="nanum-myeongjo"]::before
+      { content: '나눔명조';   font-family: 'Nanum Myeongjo'; }
+    .ql-snow .ql-picker.ql-font [data-value="gothic-a1"]::before
+      { content: '고딕A1';     font-family: 'Gothic A1'; }
+    .ql-snow .ql-picker.ql-font [data-value="noto-serif-kr"]::before
+      { content: 'Noto Serif'; font-family: 'Noto Serif KR'; }
+    .ql-snow .ql-picker.ql-font [data-value="gaegu"]::before
+      { content: '가에구';     font-family: 'Gaegu'; }
+    .ql-snow .ql-picker.ql-font [data-value="gugi"]::before
+      { content: '구기';       font-family: 'Gugi'; }
+    .ql-snow .ql-picker.ql-font [data-value="black-han-sans"]::before
+      { content: 'Black Han';  font-family: 'Black Han Sans'; }
+    .ql-snow .ql-picker.ql-font [data-value="do-hyeon"]::before
+      { content: 'Do Hyeon';   font-family: 'Do Hyeon'; }
+    .ql-snow .ql-picker.ql-font [data-value="jua"]::before
+      { content: 'Jua';        font-family: 'Jua'; }
+    .ql-snow .ql-picker.ql-font [data-value="stylish"]::before
+      { content: 'Stylish';    font-family: 'Stylish'; }
+    .ql-snow .ql-picker.ql-font [data-value="libre-baskerville"]::before
+      { content: 'Baskerville';font-family: 'Libre Baskerville'; }
+    .ql-snow .ql-picker.ql-font [data-value="playfair-display"]::before
+      { content: 'Playfair';   font-family: 'Playfair Display'; }
+    .ql-snow .ql-picker.ql-font [data-value="merriweather"]::before
+      { content: 'Merriweather';font-family: 'Merriweather'; }
+    .ql-snow .ql-picker.ql-font [data-value="source-sans-3"]::before
+      { content: 'Source Sans';font-family: 'Source Sans 3'; }
 
     /* ─── Editor wrapper ─── */
-    .editor-wrap {
-      overflow-y: auto;
-      background: var(--bg);
-    }
+    .editor-wrap { overflow-y: auto; background: var(--bg); }
 
     .editor-surface {
       background: var(--surface);
-      max-width: 780px;
-      margin: 32px auto;
-      border-radius: 12px;
-      border: 1px solid var(--border);
+      max-width: 780px; margin: 32px auto;
+      border-radius: 12px; border: 1px solid var(--border);
       box-shadow: 0 2px 16px rgba(0,0,0,0.04);
       overflow: hidden;
     }
 
+    /* ─── ★ 방 소개 헤더 (에디터 최상단, 마크다운 렌더) ─── */
+    .room-info-header {
+      padding: 24px 40px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--accent-soft);
+      display: none;
+    }
+    .room-info-header.visible { display: block; }
+
+    .room-info-title {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.35rem; color: var(--text);
+      margin-bottom: 10px;
+    }
+    /* 마크다운 렌더 스타일 */
+    .room-info-desc { font-size: 0.88rem; line-height: 1.75; color: var(--text); }
+    .room-info-desc h1, .room-info-desc h2, .room-info-desc h3
+      { font-family: 'Libre Baskerville', serif; margin: 0.5em 0 0.2em; }
+    .room-info-desc h1 { font-size: 1.1rem; }
+    .room-info-desc h2 { font-size: 0.98rem; }
+    .room-info-desc p  { margin: 0.3em 0; }
+    .room-info-desc strong { font-weight: 600; }
+    .room-info-desc em     { font-style: italic; color: var(--muted); }
+    .room-info-desc a      { color: var(--accent); }
+    .room-info-desc code   { background: rgba(255,255,255,0.7); padding: 1px 5px; border-radius: 3px; font-size: 0.83em; }
+    .room-info-desc pre    { background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 6px; overflow-x: auto; margin: 0.5em 0; }
+    .room-info-desc blockquote { border-left: 3px solid var(--accent); padding-left: 10px; color: var(--muted); margin: 0.5em 0; font-style: italic; }
+    .room-info-desc ul, .room-info-desc ol { padding-left: 1.4em; }
+    .room-info-desc li { margin: 0.15em 0; }
+
+    /* 방 글씨체 배지 */
+    .room-info-font-badge {
+      display: none;
+      align-items: center; gap: 6px;
+      margin-top: 12px; font-size: 0.74rem;
+      color: var(--accent); background: rgba(255,255,255,0.65);
+      border: 1px solid var(--accent); border-radius: 20px;
+      padding: 3px 12px; width: fit-content;
+    }
+
     /* ─── Save indicator ─── */
     .save-indicator {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 8px 16px;
-      font-size: 0.78rem;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 8px 16px;
+      font-size: 0.78rem; color: var(--muted);
+      display: flex; align-items: center; gap: 6px;
       transition: opacity 0.3s;
       box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     }
     .save-indicator.saving .dot { background: #F39C12; }
-    .save-indicator.saved .dot { background: var(--online); }
-    .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--border);
-      transition: background 0.2s;
-    }
+    .save-indicator.saved  .dot { background: var(--online); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
 
-    /* ─── Share copied toast ─── */
+    /* ─── Toast ─── */
     .toast {
-      position: fixed;
-      top: 72px;
-      left: 50%;
+      position: fixed; top: 72px; left: 50%;
       transform: translateX(-50%) translateY(-8px);
-      background: var(--text);
-      color: white;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 0.85rem;
-      opacity: 0;
-      pointer-events: none;
+      background: var(--text); color: white;
+      border-radius: 8px; padding: 10px 20px;
+      font-size: 0.85rem; opacity: 0; pointer-events: none;
       transition: all 0.25s;
     }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ─── Expired overlay ─── */
+    /* ─── Expired ─── */
     .expired-screen {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      text-align: center;
-      gap: 12px;
+      display: none; position: fixed; inset: 0;
+      background: var(--bg); z-index: 200;
+      align-items: center; justify-content: center;
+      flex-direction: column; text-align: center; gap: 12px;
     }
     .expired-screen.show { display: flex; }
-    .expired-screen h2 {
-      font-family: 'Libre Baskerville', serif;
-      font-size: 1.6rem;
-    }
-    .expired-screen p { color: var(--muted); font-size: 0.9rem; }
-    .expired-screen a {
-      margin-top: 8px;
-      color: var(--accent);
-      font-size: 0.88rem;
-    }
+    .expired-screen h2 { font-family: 'Libre Baskerville', serif; font-size: 1.6rem; }
+    .expired-screen p  { color: var(--muted); font-size: 0.9rem; }
+    .expired-screen a  { margin-top: 8px; color: var(--accent); font-size: 0.88rem; }
 
-    /* ─── Image upload button ─── */
     #image-upload { display: none; }
 
-    /* ─── Responsive ─── */
     @media (max-width: 600px) {
       .ql-editor { padding: 24px 20px !important; }
       .editor-surface { margin: 16px; border-radius: 10px; }
       .room-meta .expire-badge { display: none; }
+      .room-info-header { padding: 18px 20px 16px; }
     }
   </style>
 </head>
 <body>
 <div class="page">
 
+  <!-- ─── Top Bar ─── -->
   <div class="topbar">
     <a href="index.html" class="back-btn">← 홈</a>
-    <div class="room-title" id="roomTitleEl">로딩 중...</div>
+    <div class="room-title" id="roomTitleEl">로딩 중…</div>
     <div class="room-meta">
       <div class="status-dot"></div>
       <span class="expire-badge" id="expireBadge">—</span>
-      <button class="share-btn" id="shareBtn" onclick="copyCode()">
+      <button class="share-btn" onclick="copyCode()">
         🔗 코드 <span class="code" id="codeDisplay">—</span>
       </button>
     </div>
   </div>
 
+  <!-- ─── ★ Quill 툴바 (글씨체 선택기 포함) ─── -->
   <div id="quill-toolbar">
+    <!-- 글씨체 선택 -->
+    <select class="ql-font">
+      <option selected></option>
+      <option value="nanum-gothic">나눔고딕</option>
+      <option value="nanum-myeongjo">나눔명조</option>
+      <option value="gothic-a1">고딕A1</option>
+      <option value="noto-serif-kr">Noto Serif</option>
+      <option value="gaegu">가에구</option>
+      <option value="gugi">구기</option>
+      <option value="black-han-sans">Black Han</option>
+      <option value="do-hyeon">Do Hyeon</option>
+      <option value="jua">Jua</option>
+      <option value="stylish">Stylish</option>
+      <option value="libre-baskerville">Baskerville</option>
+      <option value="playfair-display">Playfair</option>
+      <option value="merriweather">Merriweather</option>
+      <option value="source-sans-3">Source Sans</option>
+    </select>
+    <!-- 기존 툴 -->
     <select class="ql-header">
       <option selected></option>
       <option value="1">제목 1</option>
@@ -304,8 +313,21 @@
     <button class="ql-clean"></button>
   </div>
 
+  <!-- ─── 에디터 영역 ─── -->
   <div class="editor-wrap">
     <div class="editor-surface">
+
+      <!-- ★ 방 소개 헤더 — 마크다운으로 렌더링됩니다 -->
+      <div class="room-info-header" id="roomInfoHeader">
+        <div class="room-info-title" id="roomInfoTitle"></div>
+        <div class="room-info-desc"  id="roomInfoDesc"></div>
+        <!-- 방 만들 때 선택한 글씨체 표시 -->
+        <div class="room-info-font-badge" id="roomInfoFontBadge">
+          ✦ <span id="roomInfoFontName"></span>
+        </div>
+      </div>
+
+      <!-- Quill 에디터 본체 -->
       <div id="editor"></div>
     </div>
   </div>
@@ -332,67 +354,139 @@
 <!-- Hidden image input -->
 <input type="file" id="image-upload" accept="image/*">
 
-<!-- Quill -->
+<!-- Quill (모듈 스크립트보다 먼저 로드) -->
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 
-<!-- Firebase -->
+<!-- Firebase + 앱 로직 -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-  import { getStorage, ref as sref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+  import { getStorage, ref as sref, uploadBytesResumable, getDownloadURL }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
   const FIREBASE_CONFIG = {
-  apiKey:            "AIzaSyBq44u5CUVbUiCb04YuW_FKTkUWwHdEK8k",   // ← 실제 값으로
-  authDomain:        "goyu-webonly-aa1cc.firebaseapp.com",
-  databaseURL:       "https://goyu-webonly-aa1cc-default-rtdb.firebaseio.com",
-  projectId:         "goyu-webonly-aa1cc",
-  storageBucket:     "goyu-webonly-aa1cc.firebasestorage.app",
-  messagingSenderId: "684157983877",
-  appId:             "1:684157983877:web:5722454ba4bc7fd51dddec"
-};
+    apiKey:            "AIzaSyBq44u5CUVbUiCb04YuW_FKTkUWwHdEK8k",
+    authDomain:        "goyu-webonly-aa1cc.firebaseapp.com",
+    databaseURL:       "https://goyu-webonly-aa1cc-default-rtdb.firebaseio.com",
+    projectId:         "goyu-webonly-aa1cc",
+    storageBucket:     "goyu-webonly-aa1cc.firebasestorage.app",
+    messagingSenderId: "684157983877",
+    appId:             "1:684157983877:web:5722454ba4bc7fd51dddec"
+  };
 
   const app     = initializeApp(FIREBASE_CONFIG);
   const db      = getDatabase(app);
   const storage = getStorage(app);
 
-  // ── Get room code from URL ──
-  const params = new URLSearchParams(location.search);
+  // ── URL에서 방 코드 ──
+  const params   = new URLSearchParams(location.search);
   const roomCode = params.get('room')?.toUpperCase();
-  if (!roomCode) { location.href = 'index.html'; }
+  if (!roomCode) location.href = 'index.html';
 
   const roomRef = ref(db, `rooms/${roomCode}`);
 
-  // ── Init Quill ──
+  // ════════════════════════════════════════
+  //  ★ Quill 글씨체 포맷 등록
+  //    whitelist에 없으면 적용이 안 됩니다
+  // ════════════════════════════════════════
+  const Font = Quill.import('formats/font');
+  Font.whitelist = [
+    'nanum-gothic', 'nanum-myeongjo', 'gothic-a1', 'noto-serif-kr',
+    'gaegu', 'gugi', 'black-han-sans', 'do-hyeon', 'jua', 'stylish',
+    'libre-baskerville', 'playfair-display', 'merriweather', 'source-sans-3'
+  ];
+  Quill.register(Font, true);
+
+  // 글씨체 family → Quill 클래스명 매핑
+  const FONT_CLASS_MAP = {
+    'Nanum Gothic':      'nanum-gothic',
+    'Nanum Myeongjo':    'nanum-myeongjo',
+    'Gothic A1':         'gothic-a1',
+    'Noto Serif KR':     'noto-serif-kr',
+    'Gaegu':             'gaegu',
+    'Gugi':              'gugi',
+    'Black Han Sans':    'black-han-sans',
+    'Do Hyeon':          'do-hyeon',
+    'Jua':               'jua',
+    'Stylish':           'stylish',
+    'Libre Baskerville': 'libre-baskerville',
+    'Playfair Display':  'playfair-display',
+    'Merriweather':      'merriweather',
+    'Source Sans 3':     'source-sans-3',
+  };
+
+  // 글씨체 표시 이름 (배지용)
+  const FONT_LABEL_MAP = {
+    'Nanum Gothic':'나눔고딕', 'Nanum Myeongjo':'나눔명조', 'Gothic A1':'고딕A1',
+    'Noto Serif KR':'Noto Serif', 'Gaegu':'가에구', 'Gugi':'구기',
+    'Black Han Sans':'Black Han', 'Do Hyeon':'Do Hyeon', 'Jua':'Jua',
+    'Stylish':'Stylish', 'Libre Baskerville':'Baskerville',
+    'Playfair Display':'Playfair', 'Merriweather':'Merriweather',
+    'Source Sans 3':'Source Sans'
+  };
+
+  // ── Quill 초기화 ──
   const quill = new Quill('#editor', {
     theme: 'snow',
     modules: { toolbar: '#quill-toolbar' },
-    placeholder: '자유롭게 기록하세요... 글, 사진, 링크 모두 환영해요 ✦',
+    placeholder: '자유롭게 기록하세요… 글, 사진, 링크 모두 환영해요 ✦',
   });
 
-  // ── Load room ──
+  // ── 방 데이터 로드 ──
   const snap = await get(roomRef);
-  if (!snap.exists()) { location.href = 'index.html'; }
+  if (!snap.exists()) location.href = 'index.html';
 
   const room = snap.val();
+
   if (room.expires < Date.now()) {
     document.getElementById('expiredScreen').classList.add('show');
   } else {
+    // ── 기본 정보 ──
     document.getElementById('roomTitleEl').textContent = room.name;
     document.getElementById('codeDisplay').textContent = roomCode;
     document.title = `${room.name} — HobbyRoom`;
 
-    // Expiry badge
     updateExpiry(room.expires);
     setInterval(() => updateExpiry(room.expires), 60000);
 
-    // Load content
+    // ── ★ 방 소개 (마크다운) 렌더링 ──
+    if (room.desc && room.desc.trim()) {
+      const header = document.getElementById('roomInfoHeader');
+      document.getElementById('roomInfoTitle').textContent = room.name;
+      document.getElementById('roomInfoDesc').innerHTML   = marked.parse(room.desc);
+      header.classList.add('visible');
+    }
+
+    // ── ★ 방 기본 글씨체 적용 ──
+    if (room.font) {
+      // 에디터 전체 폰트를 방 생성 시 선택한 글씨체로 설정
+      const editor = document.querySelector('.ql-editor');
+      editor.style.fontFamily = `'${room.font}', sans-serif`;
+
+      // 글씨체 배지 표시
+      const badge    = document.getElementById('roomInfoFontBadge');
+      const fontName = document.getElementById('roomInfoFontName');
+      fontName.textContent = (FONT_LABEL_MAP[room.font] || room.font) + ' 글씨체';
+      fontName.style.fontFamily = `'${room.font}', sans-serif`;
+      badge.style.display = 'inline-flex';
+
+      // 방 소개가 없어도 글씨체 배지를 위해 헤더를 열어둠
+      if (!room.desc || !room.desc.trim()) {
+        const header = document.getElementById('roomInfoHeader');
+        document.getElementById('roomInfoTitle').textContent = room.name;
+        header.classList.add('visible');
+      }
+    }
+
+    // ── 컨텐츠 로드 ──
     if (room.content) {
       try { quill.setContents(JSON.parse(room.content)); } catch(e) {}
     }
   }
 
-  // ── Real-time sync ──
-  let isSaving = false;
-  let lastRemoteChange = 0;
+  // ── 실시간 동기화 ──
+  let isSaving      = false;
+  let lastLocalEdit = 0;
 
   onValue(ref(db, `rooms/${roomCode}/content`), (snap) => {
     if (isSaving) return;
@@ -400,7 +494,7 @@
     const remote = snap.val();
     if (!remote) return;
     try {
-      const delta = JSON.parse(remote);
+      const delta    = JSON.parse(remote);
       const curDelta = quill.getContents();
       if (JSON.stringify(delta) !== JSON.stringify(curDelta)) {
         const sel = quill.getSelection();
@@ -410,9 +504,8 @@
     } catch(e) {}
   });
 
-  // ── Save on change ──
+  // ── 자동 저장 ──
   let saveTimer = null;
-  let lastLocalEdit = 0;
 
   quill.on('text-change', (delta, old, source) => {
     if (source !== 'user') return;
@@ -436,24 +529,22 @@
   function setSaving(saving, success) {
     const ind = document.getElementById('saveIndicator');
     const txt = document.getElementById('saveText');
-    const dot = ind.querySelector('.dot');
     if (saving) {
-      ind.className = 'save-indicator saving';
-      txt.textContent = '저장 중...';
+      ind.className   = 'save-indicator saving';
+      txt.textContent = '저장 중…';
     } else if (success === true) {
-      ind.className = 'save-indicator saved';
+      ind.className   = 'save-indicator saved';
       txt.textContent = '저장됨';
     } else {
-      ind.className = 'save-indicator';
+      ind.className   = 'save-indicator';
       txt.textContent = '저장 실패';
     }
   }
 
-  // ── Image upload (Firebase Storage + 자동 압축) ──
+  // ── 이미지 업로드 (Firebase Storage + 자동 압축) ──
   const imgInput = document.getElementById('image-upload');
   window.triggerImageUpload = () => imgInput.click();
 
-  // Canvas로 압축 후 Blob 반환
   function compressToBlob(file, maxWidth = 1600, quality = 0.85) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -465,7 +556,10 @@
         canvas.width  = Math.round(img.width  * scale);
         canvas.height = Math.round(img.height * scale);
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('압축 실패')), 'image/jpeg', quality);
+        canvas.toBlob(
+          blob => blob ? resolve(blob) : reject(new Error('압축 실패')),
+          'image/jpeg', quality
+        );
       };
       img.onerror = reject;
       img.src = url;
@@ -478,22 +572,24 @@
     if (file.size > 20 * 1024 * 1024) {
       alert('20MB 이하 이미지만 올릴 수 있어요.'); imgInput.value = ''; return;
     }
-
     setSaving(true);
-    document.getElementById('saveText').textContent = '압축 중...';
-
+    document.getElementById('saveText').textContent = '압축 중…';
     try {
-      const blob      = await compressToBlob(file);
-      const path      = `rooms/${roomCode}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      const blob       = await compressToBlob(file);
+      const path       = `rooms/${roomCode}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
       const storageRef = sref(storage, path);
-      const task      = uploadBytesResumable(storageRef, blob, { contentType: 'image/jpeg' });
+      const task       = uploadBytesResumable(storageRef, blob, { contentType: 'image/jpeg' });
 
       task.on('state_changed',
         (snap) => {
           const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
           document.getElementById('saveText').textContent = `업로드 ${pct}%`;
         },
-        (err) => { console.error(err); alert('업로드 실패. Firebase Storage 설정을 확인해주세요.'); setSaving(false, false); },
+        (err) => {
+          console.error(err);
+          alert('업로드 실패. Firebase Storage 설정을 확인해주세요.');
+          setSaving(false, false);
+        },
         async () => {
           const url   = await getDownloadURL(task.snapshot.ref);
           const range = quill.getSelection(true);
@@ -503,14 +599,12 @@
         }
       );
     } catch(err) {
-      console.error(err);
-      alert('이미지 처리 중 오류가 발생했어요.');
-      setSaving(false, false);
+      console.error(err); alert('이미지 처리 중 오류가 발생했어요.'); setSaving(false, false);
     }
     imgInput.value = '';
   });
 
-  // ── Copy code ──
+  // ── 코드 복사 ──
   window.copyCode = () => {
     navigator.clipboard.writeText(roomCode).then(() => {
       const toast = document.getElementById('toast');
@@ -519,14 +613,12 @@
     });
   };
 
-  // ── Expiry display ──
+  // ── 만료 표시 ──
   function updateExpiry(expires) {
     const remaining = expires - Date.now();
-    const badge = document.getElementById('expireBadge');
+    const badge     = document.getElementById('expireBadge');
     if (remaining <= 0) {
-      badge.textContent = '만료됨';
-      badge.classList.add('soon');
-      return;
+      badge.textContent = '만료됨'; badge.classList.add('soon'); return;
     }
     const hours = Math.floor(remaining / 3600000);
     const days  = Math.floor(hours / 24);
@@ -536,8 +628,7 @@
       badge.textContent = `${hours}시간 후 만료`;
       if (hours < 6) badge.classList.add('soon');
     } else {
-      badge.textContent = '곧 만료';
-      badge.classList.add('soon');
+      badge.textContent = '곧 만료'; badge.classList.add('soon');
     }
   }
 </script>
