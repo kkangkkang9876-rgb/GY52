@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HobbyRoom — 취미를 함께 기록하는 공간</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <!-- ★ 무료 글씨체 14종 (한국어 + 영문) -->
-  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=DM+Sans:wght@300;400;500&family=Gaegu&family=Gothic+A1:wght@300;400;700&family=Gugi&family=Jua&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;1,300&family=Nanum+Gothic&family=Nanum+Myeongjo&family=Noto+Serif+KR:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&family=Stylish&display=swap" rel="stylesheet">
-  <!-- marked.js — 마크다운 렌더링 -->
-  <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -21,213 +18,292 @@
       --accent-soft: #EEF3E8;
       --border: #E5E3DA;
       --danger: #C0392B;
-      --danger-soft: #fdf3f2;
     }
 
-    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; }
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+    }
 
-    .page { min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto; }
-
-    /* ─── Header (3-column grid: left | center | right) ─── */
-    header {
-      padding: 0 24px;
-      height: 60px;
+    /* ─── Layout ─── */
+    .page {
+      min-height: 100vh;
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-      position: sticky; top: 0; z-index: 10;
+      grid-template-rows: auto 1fr auto;
     }
-    .header-left  { display: flex; align-items: center; }
-    .header-center{ display: flex; justify-content: center; }
-    .header-right { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
 
-    .logo { font-family: 'Libre Baskerville', serif; font-size: 1.25rem; letter-spacing: -0.02em; color: var(--text); text-decoration: none; }
+    /* ─── Header ─── */
+    header {
+      padding: 28px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+    }
     .logo span { color: var(--accent); }
 
-    /* ★ 좌측 상단 탭 버튼 */
-    .sidebar-tab-btn {
-      display: flex; align-items: center; gap: 7px;
-      background: none; border: 1px solid var(--border);
-      border-radius: 8px; padding: 7px 14px;
-      cursor: pointer; font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem; color: var(--muted);
-      transition: all 0.18s;
+    .header-link {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
-    .sidebar-tab-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-    .sidebar-tab-btn .tab-icon { font-size: 0.95rem; line-height: 1; }
+    .header-link:hover { color: var(--text); }
 
     /* ─── Hero ─── */
-    .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 80px 24px 60px; }
-    .eyebrow { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; font-weight: 500; }
-    h1 { font-family: 'Libre Baskerville', serif; font-size: clamp(2.2rem, 5vw, 3.8rem); line-height: 1.15; letter-spacing: -0.03em; max-width: 640px; margin-bottom: 20px; }
-    .subtitle { font-size: 1rem; color: var(--muted); max-width: 420px; line-height: 1.7; margin-bottom: 56px; }
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 60px;
+    }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+
+    h1 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      max-width: 640px;
+      margin-bottom: 20px;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 420px;
+      line-height: 1.7;
+      margin-bottom: 56px;
+    }
 
     /* ─── Cards ─── */
-    .cards { display: flex; gap: 16px; width: 100%; max-width: 520px; flex-wrap: wrap; justify-content: center; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 28px 24px; flex: 1; min-width: 220px; text-align: left; cursor: pointer; transition: box-shadow 0.18s, transform 0.18s, border-color 0.18s; }
-    .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.07); transform: translateY(-2px); border-color: var(--accent); }
-    .card-icon { font-size: 1.6rem; margin-bottom: 14px; }
-    .card h3 { font-family: 'Libre Baskerville', serif; font-size: 1.05rem; margin-bottom: 6px; font-weight: 700; }
-    .card p { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
+    .cards {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      max-width: 520px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
 
-    /* ─── Modals ─── */
-    .overlay { display: none; position: fixed; inset: 0; background: rgba(28,28,26,0.45); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 28px 24px;
+      flex: 1;
+      min-width: 220px;
+      text-align: left;
+      cursor: pointer;
+      transition: box-shadow 0.18s, transform 0.18s, border-color 0.18s;
+    }
+    .card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.07);
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .card-icon {
+      font-size: 1.6rem;
+      margin-bottom: 14px;
+    }
+    .card h3 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .card p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ─── Modal ─── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(28,28,26,0.45);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
     .overlay.open { display: flex; }
-    .modal { background: var(--surface); border-radius: 16px; padding: 36px; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.12); animation: slideUp 0.22s ease; }
-    @keyframes slideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-    .modal h2 { font-family: 'Libre Baskerville', serif; font-size: 1.35rem; margin-bottom: 6px; }
-    .modal .modal-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 28px; }
 
-    label { display: block; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-    .opt-badge { font-size: 0.68rem; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 7px; margin-left: 6px; vertical-align: middle; }
-
-    input[type="text"], input[type="password"] { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.15s; margin-bottom: 20px; }
-    input[type="text"]:focus, input[type="password"]:focus { border-color: var(--accent); }
-    input::placeholder { color: var(--muted); }
-
-    .days-row { display: flex; gap: 8px; margin-bottom: 24px; }
-    .day-btn { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--muted); transition: all 0.15s; }
-    .day-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 500; }
-
-    /* ─── ★ 글씨체 선택기 ─── */
-    .font-picker {
-      display: flex; gap: 8px;
-      overflow-x: auto; padding-bottom: 8px; margin-bottom: 24px;
-      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    .modal {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 36px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.12);
+      animation: slideUp 0.22s ease;
     }
-    .font-picker::-webkit-scrollbar { height: 4px; }
-    .font-picker::-webkit-scrollbar-track { background: transparent; }
-    .font-picker::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-    .font-opt {
-      flex-shrink: 0; padding: 7px 13px;
-      border: 1px solid var(--border); border-radius: 8px;
-      background: var(--bg); cursor: pointer;
-      font-size: 0.92rem; color: var(--text);
-      transition: all 0.15s; white-space: nowrap;
-      line-height: 1.4;
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    .font-opt:hover { border-color: var(--accent); background: var(--accent-soft); }
-    .font-opt.selected { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 
-    /* ─── ★ 마크다운 에디터 ─── */
-    .md-editor-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 24px; background: var(--surface); }
-    .md-toolbar { display: flex; align-items: center; background: var(--bg); border-bottom: 1px solid var(--border); padding: 6px 10px; gap: 4px; }
-    .md-tool-btn { background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; color: var(--muted); padding: 4px 10px; border-radius: 6px; transition: all 0.15s; }
-    .md-tool-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.08); font-weight: 500; }
-    .md-hint { margin-left: auto; font-size: 0.7rem; color: var(--muted); font-family: monospace; letter-spacing: 0.02em; }
-    .md-textarea { width: 100%; padding: 12px 14px; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--text); background: var(--surface); resize: vertical; min-height: 96px; display: block; line-height: 1.6; }
-    .md-textarea::placeholder { color: var(--muted); }
-    .md-preview { padding: 14px 16px; font-size: 0.9rem; line-height: 1.75; min-height: 96px; background: var(--surface); }
-    .md-preview h1, .md-preview h2, .md-preview h3 { font-family: 'Libre Baskerville', serif; margin: 0.6em 0 0.3em; }
-    .md-preview h1 { font-size: 1.25rem; } .md-preview h2 { font-size: 1.05rem; } .md-preview h3 { font-size: 0.95rem; }
-    .md-preview p { margin: 0.35em 0; }
-    .md-preview strong { font-weight: 600; }
-    .md-preview em { font-style: italic; color: var(--muted); }
-    .md-preview ul, .md-preview ol { padding-left: 1.4em; }
-    .md-preview li { margin: 0.2em 0; }
-    .md-preview code { background: var(--bg); padding: 1px 6px; border-radius: 4px; font-size: 0.84em; font-family: 'Courier New', monospace; }
-    .md-preview pre { background: var(--bg); padding: 10px 14px; border-radius: 6px; overflow-x: auto; margin: 0.5em 0; }
-    .md-preview hr { border: none; border-top: 1px solid var(--border); margin: 0.8em 0; }
-    .md-preview blockquote { border-left: 3px solid var(--accent); padding-left: 12px; color: var(--muted); margin: 0.6em 0; font-style: italic; }
-    .md-preview a { color: var(--accent); }
-    .md-preview-empty { color: var(--muted); font-style: italic; font-size: 0.85rem; }
+    .modal h2 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.35rem;
+      margin-bottom: 6px;
+    }
+    .modal .modal-sub {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
 
-    .btn-row { display: flex; gap: 10px; }
-    .btn { flex: 1; padding: 13px; border-radius: 8px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; transition: all 0.15s; }
-    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.15s;
+      margin-bottom: 20px;
+    }
+    input[type="text"]:focus { border-color: var(--accent); }
+    input[type="text"]::placeholder { color: var(--muted); }
+
+    .days-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .day-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+    .day-btn.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+    }
+    .btn {
+      flex: 1;
+      padding: 13px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
     .btn-ghost:hover { border-color: var(--text); color: var(--text); }
-    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
     .btn-primary:hover { opacity: 0.88; }
     .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-danger { background: var(--danger); color: white; flex: 1; }
-    .btn-danger:hover { opacity: 0.88; }
 
-    .error-msg { font-size: 0.8rem; color: var(--danger); margin-top: -14px; margin-bottom: 16px; display: none; }
-
-    /* ─── ★ Rooms Sidebar ─── */
-    .sidebar {
-      position: fixed; top: 0; left: 0; bottom: 0;
-      width: 320px; background: var(--surface);
-      border-right: 1px solid var(--border);
-      z-index: 200; transform: translateX(-100%);
-      transition: transform 0.28s cubic-bezier(.4,0,.2,1);
-      display: flex; flex-direction: column;
+    .error-msg {
+      font-size: 0.8rem;
+      color: var(--danger);
+      margin-top: -14px;
+      margin-bottom: 16px;
+      display: none;
     }
-    .sidebar.open { transform: translateX(0); box-shadow: 4px 0 32px rgba(0,0,0,0.1); }
-
-    .sidebar-header {
-      padding: 20px 20px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .sidebar-header h3 { font-family: 'Libre Baskerville', serif; font-size: 1rem; }
-    .sidebar-close { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1.2rem; padding: 4px; transition: color 0.15s; }
-    .sidebar-close:hover { color: var(--text); }
-
-    /* ★ 관리자(마스터키) 영역 */
-    .sidebar-admin-bar {
-      padding: 12px 20px;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 8px;
-    }
-    .admin-badge { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
-    .admin-badge.on  { color: var(--accent); }
-    .admin-badge.off { color: var(--muted); }
-    .admin-lock-btn { margin-left: auto; font-size: 0.75rem; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
-    .admin-lock-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-    .rooms-list { flex: 1; overflow-y: auto; padding: 12px; }
-    .rooms-empty { padding: 40px 20px; text-align: center; color: var(--muted); font-size: 0.85rem; }
-
-    .room-item {
-      padding: 14px 16px; border-radius: 10px;
-      border: 1px solid var(--border); margin-bottom: 8px;
-      background: var(--surface); cursor: pointer;
-      transition: all 0.15s; display: flex; align-items: center; gap: 12px;
-    }
-    .room-item:hover { border-color: var(--accent); background: var(--accent-soft); }
-    .room-item-info { flex: 1; min-width: 0; }
-    .room-item-name { font-size: 0.9rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .room-item-meta { font-size: 0.74rem; color: var(--muted); margin-top: 2px; }
-    .room-item-desc { font-size: 0.74rem; color: var(--muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-style: italic; }
-    .room-item-code { font-size: 0.74rem; font-weight: 700; color: var(--accent); letter-spacing: 0.08em; background: var(--accent-soft); padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
-    .room-delete-btn { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1rem; padding: 4px; border-radius: 4px; transition: all 0.15s; display: none; flex-shrink: 0; }
-    .room-delete-btn:hover { color: var(--danger); background: var(--danger-soft); }
-    .admin-mode .room-delete-btn { display: block; }
-
-    .sidebar-backdrop { display: none; position: fixed; inset: 0; z-index: 190; }
-    .sidebar-backdrop.open { display: block; }
 
     /* ─── Footer ─── */
-    footer { text-align: center; padding: 24px; font-size: 0.75rem; color: var(--muted); border-top: 1px solid var(--border); }
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
 
-    .deco { position: fixed; pointer-events: none; opacity: 0.04; font-family: 'Libre Baskerville', serif; font-size: 18vw; font-style: italic; color: var(--accent); bottom: -40px; right: -20px; line-height: 1; user-select: none; }
+    /* ─── Decoration ─── */
+    .deco {
+      position: fixed;
+      pointer-events: none;
+      opacity: 0.04;
+      font-family: 'Libre Baskerville', serif;
+      font-size: 18vw;
+      font-style: italic;
+      color: var(--accent);
+      bottom: -40px;
+      right: -20px;
+      line-height: 1;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
 <div class="page">
 
   <header>
-    <!-- ★ 좌측 상단 탭 — 방 목록 -->
-    <div class="header-left">
-      <button class="sidebar-tab-btn" onclick="openSidebar()">
-        <span class="tab-icon">☰</span> 방 목록
-      </button>
-    </div>
-    <!-- 중앙 로고 -->
-    <div class="header-center">
-      <a class="logo" href="index.html">Hobby<span>Room</span></a>
-    </div>
-    <div class="header-right"></div>
+    <a class="logo" href="index.html">Hobby<span>Room</span></a>
+    <a class="header-link" href="https://github.com" target="_blank">GitHub</a>
   </header>
 
   <main class="hero">
     <p class="eyebrow">취미를 함께 기록하는 공간</p>
     <h1>같은 관심사,<br>함께 쓰는 노트</h1>
     <p class="subtitle">링크, 사진, 글을 자유롭게 편집하세요.<br>방을 만들고 코드를 공유하면 끝 — 1~3일 후 자동으로 사라져요.</p>
+
     <div class="cards">
       <div class="card" onclick="openCreate()">
         <div class="card-icon">✦</div>
@@ -247,7 +323,7 @@
 
 <div class="deco">h</div>
 
-<!-- ─── Create Modal ─── -->
+<!-- Create Modal -->
 <div class="overlay" id="createOverlay" onclick="closeAll(event)">
   <div class="modal" onclick="event.stopPropagation()">
     <h2>새 방 만들기</h2>
@@ -263,23 +339,6 @@
       <button class="day-btn" onclick="selectDay(3,this)">3일</button>
     </div>
 
-    <!-- ★ 글씨체 선택기 -->
-    <label>글씨체 선택</label>
-    <div class="font-picker" id="fontPicker"></div>
-
-    <!-- ★ 방 소개 (마크다운 지원) -->
-    <label>방 소개 <span class="opt-badge">선택 · 마크다운</span></label>
-    <div class="md-editor-wrap">
-      <div class="md-toolbar">
-        <button class="md-tool-btn active" id="editTabBtn" onclick="switchMdTab('edit')">편집</button>
-        <button class="md-tool-btn" id="previewTabBtn" onclick="switchMdTab('preview')">미리보기</button>
-        <span class="md-hint">**굵게**&nbsp;&nbsp;*기울임*&nbsp;&nbsp;# 제목</span>
-      </div>
-      <textarea id="roomDesc" class="md-textarea"
-        placeholder="방을 소개해보세요. 마크다운 문법을 쓸 수 있어요.&#10;예) **독서 모임** — 매주 책 한 권씩 읽어요 📚"></textarea>
-      <div id="mdPreview" class="md-preview" style="display:none;"></div>
-    </div>
-
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeAll()">취소</button>
       <button class="btn btn-primary" id="createBtn" onclick="createRoom()">만들기</button>
@@ -287,15 +346,16 @@
   </div>
 </div>
 
-<!-- ─── Join Modal ─── -->
+<!-- Join Modal -->
 <div class="overlay" id="joinOverlay" onclick="closeAll(event)">
   <div class="modal" onclick="event.stopPropagation()">
     <h2>방 참가하기</h2>
     <p class="modal-sub">초대받은 6자리 코드를 입력하세요</p>
+
     <label for="roomCode">방 코드</label>
-    <input type="text" id="roomCode" placeholder="ABC123" maxlength="6"
-      oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+    <input type="text" id="roomCode" placeholder="ABC123" maxlength="6" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
     <p class="error-msg" id="joinError">존재하지 않거나 만료된 방이에요.</p>
+
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeAll()">취소</button>
       <button class="btn btn-primary" id="joinBtn" onclick="joinRoom()">참가하기</button>
@@ -303,160 +363,32 @@
   </div>
 </div>
 
-<!-- ─── ★ 마스터키 관리자 인증 모달 ─── -->
-<div class="overlay" id="adminOverlay" onclick="closeAll(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <h2>🔐 관리자 인증</h2>
-    <p class="modal-sub">마스터 키를 입력하면 모든 방을 삭제·관리할 수 있어요</p>
-    <label for="adminPw">마스터 키</label>
-    <input type="password" id="adminPw" placeholder="••••••••">
-    <p class="error-msg" id="adminError">마스터 키가 올바르지 않아요.</p>
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="closeAdminModal()">취소</button>
-      <button class="btn btn-primary" onclick="verifyAdmin()">확인</button>
-    </div>
-  </div>
-</div>
-
-<!-- ─── ★ 방 삭제 확인 모달 ─── -->
-<div class="overlay" id="deleteOverlay" onclick="closeAll(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <h2>🗑 방 삭제</h2>
-    <p class="modal-sub" id="deleteModalSub">이 방을 삭제하면 복구할 수 없어요.</p>
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="closeAll()">취소</button>
-      <button class="btn btn-danger" onclick="confirmDelete()">삭제하기</button>
-    </div>
-  </div>
-</div>
-
-<!-- ─── ★ 좌측 방 목록 사이드바 ─── -->
-<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
-<div class="sidebar" id="roomsSidebar">
-  <div class="sidebar-header">
-    <h3>활성화된 방 목록</h3>
-    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
-  </div>
-  <!-- ★ 관리자 모드 (마스터키) -->
-  <div class="sidebar-admin-bar">
-    <span class="admin-badge off" id="adminBadge">👤 일반 모드</span>
-    <button class="admin-lock-btn" id="adminToggleBtn" onclick="toggleAdmin()">관리자 로그인</button>
-  </div>
-  <div class="rooms-list" id="roomsList">
-    <div class="rooms-empty">로딩 중…</div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════════════════════════
-     Firebase + 앱 로직
-════════════════════════════════════════════════════════════ -->
+<!-- Firebase SDK -->
 <script type="module">
-  import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, get, child, remove, onValue }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-  // ════════════════════════════════════════
-  //  ★ Firebase 설정 — 아래 값을 교체하세요
-  // ════════════════════════════════════════
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
   const FIREBASE_CONFIG = {
-    apiKey:            "여기에_붙여넣기",
-    authDomain:        "여기에_붙여넣기",
-    databaseURL:       "여기에_붙여넣기",
-    projectId:         "여기에_붙여넣기",
-    storageBucket:     "여기에_붙여넣기",
-    messagingSenderId: "여기에_붙여넣기",
-    appId:             "여기에_붙여넣기"
-  };
-
-  // ════════════════════════════════════════
-  //  ★ 마스터 키 — 원하는 비밀번호로 바꾸세요
-  //    이 키를 아는 사람만 모든 방을 삭제할 수 있어요
-  // ════════════════════════════════════════
-  const MASTER_KEY = "여기에_비밀번호_설정";
+  apiKey:            "AIzaSyBq44u5CUVbUiCb04YuW_FKTkUWwHdEK8k",   // ← 실제 값으로
+  authDomain:        "goyu-webonly-aa1cc.firebaseapp.com",
+  databaseURL:       "https://goyu-webonly-aa1cc-default-rtdb.firebaseio.com",
+  projectId:         "goyu-webonly-aa1cc",
+  storageBucket:     "goyu-webonly-aa1cc.firebasestorage.app",
+  messagingSenderId: "684157983877",
+  appId:             "1:684157983877:web:5722454ba4bc7fd51dddec"
+};
 
   const app = initializeApp(FIREBASE_CONFIG);
-  const db  = getDatabase(app);
+  const db = getDatabase(app);
 
-  let selectedDays  = 1;
-  let selectedFont  = 'Nanum Gothic';   // 기본 글씨체
-  let isAdmin       = false;
-  let pendingDelete = null;             // { code, name }
+  let selectedDays = 1;
 
-  // ════════════════════════════════════════
-  //  ★ 무료 글씨체 14종 정의
-  // ════════════════════════════════════════
-  const FONTS = [
-    { label: '나눔고딕',     family: 'Nanum Gothic' },
-    { label: '나눔명조',     family: 'Nanum Myeongjo' },
-    { label: '고딕A1',      family: 'Gothic A1' },
-    { label: 'Noto Serif',  family: 'Noto Serif KR' },
-    { label: '가에구',      family: 'Gaegu' },
-    { label: '구기',        family: 'Gugi' },
-    { label: 'Black Han',   family: 'Black Han Sans' },
-    { label: 'Do Hyeon',    family: 'Do Hyeon' },
-    { label: 'Jua',         family: 'Jua' },
-    { label: 'Stylish',     family: 'Stylish' },
-    { label: 'Baskerville', family: 'Libre Baskerville' },
-    { label: 'Playfair',    family: 'Playfair Display' },
-    { label: 'Merriweather',family: 'Merriweather' },
-    { label: 'Source Sans', family: 'Source Sans 3' },
-  ];
-
-  // ── 글씨체 선택기 렌더링 ──
-  (function buildFontPicker() {
-    const container = document.getElementById('fontPicker');
-    FONTS.forEach((f, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'font-opt' + (i === 0 ? ' selected' : '');
-      btn.style.fontFamily = `'${f.family}', sans-serif`;
-      btn.textContent = f.label;
-      btn.title = f.family;
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.font-opt').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        selectedFont = f.family;
-      });
-      container.appendChild(btn);
-    });
-  })();
-
-  // ════════════════════════════════════════
-  //  ★ 마크다운 탭 전환 (편집 ↔ 미리보기)
-  // ════════════════════════════════════════
-  window.switchMdTab = (tab) => {
-    const textarea   = document.getElementById('roomDesc');
-    const preview    = document.getElementById('mdPreview');
-    const editBtn    = document.getElementById('editTabBtn');
-    const previewBtn = document.getElementById('previewTabBtn');
-
-    if (tab === 'preview') {
-      const md = textarea.value.trim();
-      preview.innerHTML = md
-        ? marked.parse(md)
-        : '<span class="md-preview-empty">내용을 입력하면 여기에 미리보기가 표시돼요.</span>';
-      textarea.style.display  = 'none';
-      preview.style.display   = 'block';
-      editBtn.classList.remove('active');
-      previewBtn.classList.add('active');
-    } else {
-      textarea.style.display  = 'block';
-      preview.style.display   = 'none';
-      editBtn.classList.add('active');
-      previewBtn.classList.remove('active');
-    }
-  };
-
-  // ── 유지 기간 선택 ──
   window.selectDay = (d, el) => {
     selectedDays = d;
     document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
     el.classList.add('active');
   };
 
-  // ── 모달 열기 / 닫기 ──
   window.openCreate = () => {
-    switchMdTab('edit');                      // 항상 편집 탭으로 리셋
     document.getElementById('createOverlay').classList.add('open');
     setTimeout(() => document.getElementById('roomName').focus(), 100);
   };
@@ -464,195 +396,61 @@
     document.getElementById('joinOverlay').classList.add('open');
     setTimeout(() => document.getElementById('roomCode').focus(), 100);
   };
-
   window.closeAll = (e) => {
     if (e && e.target !== e.currentTarget) return;
     document.querySelectorAll('.overlay').forEach(o => o.classList.remove('open'));
-    document.getElementById('joinError').style.display  = 'none';
-    document.getElementById('adminError').style.display = 'none';
-    pendingDelete = null;
+    document.getElementById('joinError').style.display = 'none';
   };
 
-  // ── 사이드바 ──
-  window.openSidebar = () => {
-    document.getElementById('roomsSidebar').classList.add('open');
-    document.getElementById('sidebarBackdrop').classList.add('open');
-  };
-  window.closeSidebar = () => {
-    document.getElementById('roomsSidebar').classList.remove('open');
-    document.getElementById('sidebarBackdrop').classList.remove('open');
-  };
-
-  // ════════════════════════════════════════
-  //  ★ 마스터키 관리자 시스템
-  // ════════════════════════════════════════
-  window.toggleAdmin = () => {
-    if (isAdmin) {
-      isAdmin = false;
-      updateAdminUI();
-    } else {
-      document.getElementById('adminOverlay').classList.add('open');
-      setTimeout(() => document.getElementById('adminPw').focus(), 100);
-    }
-  };
-
-  window.closeAdminModal = () => {
-    document.getElementById('adminOverlay').classList.remove('open');
-    document.getElementById('adminPw').value = '';
-    document.getElementById('adminError').style.display = 'none';
-  };
-
-  window.verifyAdmin = () => {
-    const pw = document.getElementById('adminPw').value;
-    if (pw === MASTER_KEY) {
-      isAdmin = true;
-      updateAdminUI();
-      closeAdminModal();
-    } else {
-      document.getElementById('adminError').style.display = 'block';
-      document.getElementById('adminPw').value = '';
-      document.getElementById('adminPw').focus();
-    }
-  };
-
-  function updateAdminUI() {
-    const badge = document.getElementById('adminBadge');
-    const btn   = document.getElementById('adminToggleBtn');
-    const list  = document.getElementById('roomsList');
-    if (isAdmin) {
-      badge.textContent = '🔑 관리자 모드';
-      badge.className   = 'admin-badge on';
-      btn.textContent   = '로그아웃';
-      list.classList.add('admin-mode');
-    } else {
-      badge.textContent = '👤 일반 모드';
-      badge.className   = 'admin-badge off';
-      btn.textContent   = '관리자 로그인';
-      list.classList.remove('admin-mode');
-    }
+  function generateCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    return code;
   }
 
-  // ── 방 목록 실시간 렌더링 ──
-  onValue(ref(db, 'rooms'), (snap) => {
-    const list = document.getElementById('roomsList');
-    if (!snap.exists()) {
-      list.innerHTML = '<div class="rooms-empty">아직 만들어진 방이 없어요</div>';
-      return;
-    }
-
-    const now   = Date.now();
-    const rooms = [];
-    snap.forEach(child => {
-      const d = child.val();
-      if (d.expires > now) rooms.push({ code: child.key, ...d });
-    });
-
-    if (rooms.length === 0) {
-      list.innerHTML = '<div class="rooms-empty">활성화된 방이 없어요</div>';
-      return;
-    }
-
-    rooms.sort((a, b) => b.createdAt - a.createdAt);
-    list.innerHTML = rooms.map(r => {
-      const hoursLeft = Math.max(0, Math.floor((r.expires - now) / 3600000));
-      const timeLabel = hoursLeft >= 24
-        ? `${Math.floor(hoursLeft / 24)}일 남음`
-        : `${hoursLeft}시간 남음`;
-      // 마크다운 기호 제거 후 소개 미리보기
-      const rawDesc = r.desc
-        ? r.desc.replace(/[#*_~`>\[\]()!]/g, '').trim().slice(0, 55)
-        : '';
-      const descHtml = rawDesc
-        ? `<div class="room-item-desc">${escHtml(rawDesc)}${r.desc.length > 55 ? '…' : ''}</div>`
-        : '';
-      return `
-        <div class="room-item" onclick="goToRoom('${r.code}')">
-          <div class="room-item-info">
-            <div class="room-item-name">${escHtml(r.name)}</div>
-            <div class="room-item-meta">${timeLabel}</div>
-            ${descHtml}
-          </div>
-          <span class="room-item-code">${r.code}</span>
-          <button class="room-delete-btn"
-            onclick="event.stopPropagation(); askDelete('${r.code}','${escHtml(r.name)}')"
-            title="방 삭제 (관리자)">🗑</button>
-        </div>`;
-    }).join('');
-  });
-
-  window.goToRoom = (code) => { window.location.href = `editor.html?room=${code}`; };
-
-  // ★ 관리자 전용 방 삭제
-  window.askDelete = (code, name) => {
-    if (!isAdmin) return;
-    pendingDelete = { code, name };
-    document.getElementById('deleteModalSub').textContent =
-      `"${name}" 방을 삭제하면 복구할 수 없어요.`;
-    document.getElementById('deleteOverlay').classList.add('open');
-  };
-
-  window.confirmDelete = async () => {
-    if (!pendingDelete || !isAdmin) return;
-    await remove(ref(db, `rooms/${pendingDelete.code}`));
-    document.getElementById('deleteOverlay').classList.remove('open');
-    pendingDelete = null;
-  };
-
-  function escHtml(str) {
-    return String(str).replace(/[&<>"']/g, c =>
-      ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-  }
-
-  // ── 방 만들기 ──
   window.createRoom = async () => {
     const name = document.getElementById('roomName').value.trim();
     if (!name) { document.getElementById('roomName').focus(); return; }
-    const btn = document.getElementById('createBtn');
-    btn.disabled = true; btn.textContent = '생성 중…';
 
-    const code    = generateCode();
-    const expires = Date.now() + selectedDays * 86400000;
-    const desc    = document.getElementById('roomDesc').value.trim();
+    const btn = document.getElementById('createBtn');
+    btn.disabled = true; btn.textContent = '생성 중...';
+
+    const code = generateCode();
+    const expires = Date.now() + selectedDays * 24 * 60 * 60 * 1000;
 
     await set(ref(db, `rooms/${code}`), {
       name,
       expires,
       days: selectedDays,
       content: '',
-      createdAt: Date.now(),
-      font: selectedFont,   // ★ 선택한 글씨체 저장
-      desc: desc || ''      // ★ 마크다운 소개 저장
+      createdAt: Date.now()
     });
 
-    const myRooms = JSON.parse(sessionStorage.getItem('hr_myrooms') || '[]');
-    myRooms.push(code);
-    sessionStorage.setItem('hr_myrooms', JSON.stringify(myRooms));
-    window.location.href = `editor.html?room=${code}&owner=1`;
-  };
-
-  // ── 방 참가하기 ──
-  window.joinRoom = async () => {
-    const code = document.getElementById('roomCode').value.trim().toUpperCase();
-    if (code.length !== 6) return;
-    const btn = document.getElementById('joinBtn');
-    btn.disabled = true; btn.textContent = '확인 중…';
-    const snap = await get(child(ref(db), `rooms/${code}`));
-    if (!snap.exists() || snap.val().expires < Date.now()) {
-      document.getElementById('joinError').style.display = 'block';
-      btn.disabled = false; btn.textContent = '참가하기'; return;
-    }
+    sessionStorage.setItem('hr_name', name);
     window.location.href = `editor.html?room=${code}`;
   };
 
-  function generateCode() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-  }
+  window.joinRoom = async () => {
+    const code = document.getElementById('roomCode').value.trim().toUpperCase();
+    if (code.length !== 6) return;
 
-  // ── Enter 키 단축키 ──
-  document.getElementById('roomName').addEventListener('keydown', e => { if (e.key === 'Enter') window.createRoom(); });
-  document.getElementById('roomCode').addEventListener('keydown', e => { if (e.key === 'Enter') window.joinRoom(); });
-  document.getElementById('adminPw').addEventListener('keydown',  e => { if (e.key === 'Enter') window.verifyAdmin(); });
+    const btn = document.getElementById('joinBtn');
+    btn.disabled = true; btn.textContent = '확인 중...';
+
+    const snap = await get(child(ref(db), `rooms/${code}`));
+    if (!snap.exists() || snap.val().expires < Date.now()) {
+      document.getElementById('joinError').style.display = 'block';
+      btn.disabled = false; btn.textContent = '참가하기';
+      return;
+    }
+
+    window.location.href = `editor.html?room=${code}`;
+  };
+
+  // Enter key support
+  document.getElementById('roomName').addEventListener('keydown', e => { if(e.key==='Enter') window.createRoom(); });
+  document.getElementById('roomCode').addEventListener('keydown', e => { if(e.key==='Enter') window.joinRoom(); });
 </script>
 </body>
 </html>
